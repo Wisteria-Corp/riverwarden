@@ -1,0 +1,45 @@
+# riverwarden configuration. Copy to config.yaml and edit.
+#
+# `host` is an IP address or host name, optionally with a port. Replace the examples with your miners.
+
+units:
+  - name: rig1
+    host: "rig1.example"
+  - name: rig2
+    host: "rig2.example"
+    fan_percent: 45        # manual fan to re-apply after wake or reboot (omit to leave the fan to the firmware)
+
+safety:
+  fan_min_percent: 20      # reject manual fan settings below this; 0 % stops the fans
+  wake_reboot: true        # reboot when waking: the firmware's temperature flag only clears on reboot
+  board_temp_warn_c: 95    # status shows a warning at or above this board temperature
+
+# Lock file, logs, thermostat state and the API token. Relative paths are relative to this file.
+# Can also be set with RIVERWARDEN_DATA_DIR.
+data_dir: "./riverwarden-data"
+
+# Optional: use the miners as a thermostat-controlled heater. Run `riverwarden tick --apply` on a schedule.
+# thermostat:
+#   low_c: 22.0                      # colder than this: wake one unit
+#   high_c: 24.0                     # warmer than this: put one unit to sleep
+#   min_running: 1
+#   max_running: 2
+#   sleep_order: [rig1, rig2]        # first sleeps first; waking goes in reverse
+#   min_minutes_between_changes: 30
+#   max_sensor_age_minutes: 45       # do nothing when the reading is older than this
+#   sensor: {type: file, path: /run/room_temp}
+#   # sensor: {type: http, url: "http://homeassistant.example:8123/api/states/sensor.room", json_path: state, header_env: {Authorization: HA_AUTH}}
+#   # sensor: {type: switchbot, device_id: "ABCDEF123456"}
+
+# Optional: heartbeat to a push-style monitor after each `tick --apply`.
+# monitor:
+#   push_url_env: RIVERWARDEN_PUSH_URL
+#   style: kuma                      # or: healthchecks
+#   checks:                          # extra commands; non-zero exit on two runs in a row fails the heartbeat
+#     - {name: backup, command: ["./check_backup.sh"]}
+
+# Optional: REST API (`riverwarden api`) and where clients such as the MCP server find it.
+# api:
+#   bind: "127.0.0.1"                # widen only behind a firewall; the token in <data_dir>/api_token is the only lock
+#   port: 8532
+#   url: "http://127.0.0.1:8532"     # with this set, `riverwarden mcp` goes through the API instead of the miners
